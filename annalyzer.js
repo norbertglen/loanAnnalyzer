@@ -2,18 +2,13 @@ const fs = require("fs");
 const es = require("event-stream");
 
 class LoanAnnalyzer {
-    filepath = ""
 
     metrics = {};
 
-    constructor(filepath) {
-        this.filepath = filepath;
-    }
-
-    processFile() {
+    processFile(filepath) {
         return new Promise((resolve, reject) =>
             fs
-                .createReadStream(this.filepath)
+                .createReadStream(filepath)
                 .pipe(es.split())
                 .pipe(
                     es
@@ -27,17 +22,19 @@ class LoanAnnalyzer {
 
     analyzeLine(line) {
         const str = line.split(',')
-        const parties = `${str[0]},${str[1]}`
-        if (this.metrics[parties]) {
-            this.metrics[parties] = this.metrics[parties] + Number(str[2])
-        } else {
-            this.metrics[parties] = Number(str[2])
+        if (str[0] && str[1]) {
+            const parties = `${str[0]},${str[1]}`
+            if (this.metrics[parties]) {
+                this.metrics[parties] = this.metrics[parties] + Number(str[2])
+            } else {
+                this.metrics[parties] = Number(str[2])
+            } 
         }
     }
 
-    async getStats() {
+    async getStats(filepath) {
         try {
-            await this.processFile()
+            await this.processFile(filepath)
             return this.metrics;
         } catch (error) {
             throw new Error("Error processing file");

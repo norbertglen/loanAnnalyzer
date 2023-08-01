@@ -17,9 +17,9 @@ function outputCSV(data, filepath) {
     })
 }
 
-const annalyzer = new LoanAnnalyzer("docs/input.csv");
+const annalyzer = new LoanAnnalyzer();
 
 annalyzer
-    .getStats()
+    .getStats("docs/input.csv")
     .then((result) => outputCSV(result, `docs/output.csv`))
     .catch((err) => console.error(err));
